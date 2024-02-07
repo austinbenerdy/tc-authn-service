@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -8,8 +9,15 @@ import (
 )
 
 func TestLoginHandler(t *testing.T) {
+	m := make(map[string]string)
+
+	m["username"] = "austinbenerdy"
+	m["password"] = "debug-password"
+
+	bodyJson, _ := json.Marshal(m)
+
 	// Create a request to the /login endpoint
-	req, err := http.NewRequest("POST", "/login", nil)
+	req, err := http.NewRequest("POST", "/login", bytes.NewReader(bodyJson))
 	if err != nil {
 		t.Fatal(err)
 	}
