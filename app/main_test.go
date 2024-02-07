@@ -9,7 +9,7 @@ import (
 
 func TestLoginHandler(t *testing.T) {
 	// Create a request to the /login endpoint
-	req, err := http.NewRequest("GET", "/login", nil)
+	req, err := http.NewRequest("POST", "/login", nil)
 	if err != nil {
 		t.Fatal(err)
 	}

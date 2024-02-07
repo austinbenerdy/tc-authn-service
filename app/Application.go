@@ -15,7 +15,7 @@ func (application *Application) init() {
 	application.tokenManager.secretKey = []byte("secret-key")
 
 	application.router = mux.NewRouter()
-	application.router.HandleFunc("/login", application.login).Methods("GET")
+	application.router.HandleFunc("/login", application.login).Methods("POST")
 }
 
 func (application *Application) login(w http.ResponseWriter, r *http.Request) {
