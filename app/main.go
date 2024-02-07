@@ -1,17 +1,29 @@
 package main
 
 import (
-	"io"
+	"encoding/json"
+	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 )
 
 func main() {
-	handler := func(w http.ResponseWriter, request *http.Request) {
-		io.WriteString(w, "Hello World")
-	}
+	app := Application{}
+	app.tokenManager = TokenManager{}
+	app.tokenManager.secretKey = []byte("secret-key")
 
-	http.HandleFunc("/", handler)
+	app.router = mux.NewRouter()
+	app.router.HandleFunc("/login", app.login).Methods("GET")
+
 	log.Println("Listening for requests")
-	log.Fatal(http.ListenAndServe(":8000",nil))
+	log.Println("http://localhost:8000")
+	log.Fatal(http.ListenAndServe(":8000", app.router))
+}
+
+func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
+	response, _ := json.Marshal(payload)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	w.Write(response)
 }
