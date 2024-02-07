@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/gorilla/mux"
 	"net/http"
-	"strconv"
 )
 
 type Application struct {
@@ -11,16 +10,20 @@ type Application struct {
 	router       *mux.Router
 }
 
+func (application *Application) init() {
+	application.tokenManager = TokenManager{}
+	application.tokenManager.secretKey = []byte("secret-key")
+
+	application.router = mux.NewRouter()
+	application.router.HandleFunc("/login", application.login).Methods("GET")
+}
+
 func (application *Application) login(w http.ResponseWriter, r *http.Request) {
 	token, err := application.tokenManager.createToken("austinbenerdy")
-
-	validity, err := application.tokenManager.validate(token)
-	isValid := strconv.FormatBool(validity)
 
 	if err != nil {
 		respondWithJSON(w, 500, err.Error())
 	}
 
-	data := []string{"login", string(application.tokenManager.secretKey[:]), token, isValid}
-	respondWithJSON(w, 200, data)
+	respondWithJSON(w, 200, token)
 }

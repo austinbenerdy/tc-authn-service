@@ -2,18 +2,13 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 )
 
 func main() {
 	app := Application{}
-	app.tokenManager = TokenManager{}
-	app.tokenManager.secretKey = []byte("secret-key")
-
-	app.router = mux.NewRouter()
-	app.router.HandleFunc("/login", app.login).Methods("GET")
+	app.init()
 
 	log.Println("Listening for requests")
 	log.Println("http://localhost:8000")

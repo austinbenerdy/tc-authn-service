@@ -1,69 +1,40 @@
 package main
 
 import (
-	"log"
+	"encoding/json"
 	"net/http"
+	"net/http/httptest"
 	"testing"
 )
 
-/*
-var (
-	mux    *http.ServeMux
-	server *httptest.Server
-)
-
-
-func setup() func() {
-
-	mux = http.NewServeMux()
-	server = httptest.NewServer(mux)
-
-	return func() {
-		server.Close()
-	}
-}
-
-// TestHelloName calls greetings.Hello with a name, checking
-// for a valid return value.
-func TestLogin(t *testing.T) {
-	name := "Gladys"
-	want := regexp.MustCompile(`\b` + name + `\b`)
-	msg, err := Hello("Gladys")
-	if !want.MatchString(msg) || err != nil {
-		t.Fatalf(`Hello("Gladys") = %q, %v, want match for %#q, nil`, msg, err, want)
-	}
-}
-
-// TestHelloEmpty calls greetings.Hello with an empty string,
-// checking for an error.
-func TestHelloEmpty(t *testing.T) {
-	msg, err := Hello("")
-	if msg != "" || err == nil {
-		t.Fatalf(`Hello("") = %q, %v, want "", error`, msg, err)
-	}
-}
-
-func makeRequest(method, url string, body interface{}, isAuthenticatedRequest bool) *httptest.ResponseRecorder {
-	requestBody, _ := json.Marshal(body)
-	request, _ := http.NewRequest(method, url, bytes.NewBuffer(requestBody))
-	if isAuthenticatedRequest {
-		request.Header.Add("Authorization", "Bearer "+bearerToken())
-	}
-	writer := httptest.NewRecorder()
-	router().ServeHTTP(writer, request)
-	return writer
-}
-
-*/
-
-func TestLogin(t *testing.T) {
-	app := Application{}
-
-	http.HandlerFunc()
-	resp, err := http.Get("http://localhost:8080/login")
+func TestLoginHandler(t *testing.T) {
+	// Create a request to the /login endpoint
+	req, err := http.NewRequest("GET", "/login", nil)
 	if err != nil {
-		log.Fatalln(err)
+		t.Fatal(err)
 	}
 
-	log.Print(resp)
+	// Create a ResponseRecorder (which satisfies http.ResponseWriter) to record the response
+	rr := httptest.NewRecorder()
+
+	// Create an instance of your application
+	app := Application{}
+	app.init()
+
+	// Use the router's ServeHTTP method to handle the request
+	app.router.ServeHTTP(rr, req)
+
+	// Check the status code
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf("handler returned wrong status code: got %v want %v",
+			status, http.StatusOK)
+	}
+	var response string
+	err = json.Unmarshal([]byte(rr.Body.String()), &response)
+
+	isValid, err := app.tokenManager.validate(response)
+
+	if isValid != true || err != nil {
+		t.Errorf("Token was not a valid JWT")
+	}
 }
