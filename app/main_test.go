@@ -21,13 +21,8 @@ func TestLoginHandler(t *testing.T) {
 
 		}
 	}(db)
-
-	m := make(map[string]string)
-
-	m["email"] = "austin.l.adamson@gmail.com"
-	m["password"] = "test-password"
-
-	lm := newLoginModel(m["email"], m["password"])
+	
+	lm := newLoginModel("austin.l.adamson@gmail.com", "test-password")
 	hashedPassword := lm.HashPassword()
 
 	insert, err := db.Query("REPLACE INTO users VALUES(?, ?, ?)", 1, lm.Email, hashedPassword)
@@ -38,7 +33,7 @@ func TestLoginHandler(t *testing.T) {
 		}
 	}(insert)
 
-	bodyJson, _ := json.Marshal(m)
+	bodyJson, _ := json.Marshal(lm)
 
 	// Create a request to the /login endpoint
 	req, err := http.NewRequest("POST", "/login", bytes.NewReader(bodyJson))
