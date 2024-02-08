@@ -7,11 +7,14 @@ import (
 )
 
 type Application struct {
-	tokenManager TokenManager
-	router       *mux.Router
+	tokenManager    TokenManager
+	router          *mux.Router
+	databaseConnect DatabaseConnect
 }
 
 func (application *Application) init() {
+	application.databaseConnect.testConnect()
+
 	application.tokenManager = TokenManager{}
 	application.tokenManager.secretKey = []byte("secret-key")
 
@@ -20,7 +23,7 @@ func (application *Application) init() {
 }
 
 type LoginModel struct {
-	Username string
+	Email    string
 	Password string
 }
 
@@ -34,7 +37,12 @@ func (application *Application) login(w http.ResponseWriter, r *http.Request) {
 		respondWithJSON(w, http.StatusInternalServerError, err.Error())
 	}
 
-	token, err := application.tokenManager.createToken(loginModel.Username)
+	err = application.databaseConnect.authenticate(loginModel.Email, loginModel.Password)
+	if err != nil {
+		respondWithJSON(w, http.StatusUnauthorized, err.Error())
+	}
+
+	token, err := application.tokenManager.createToken(loginModel.Email)
 
 	if err != nil {
 		respondWithJSON(w, http.StatusInternalServerError, err.Error())

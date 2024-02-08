@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"database/sql"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -9,10 +10,30 @@ import (
 )
 
 func TestLoginHandler(t *testing.T) {
+	db, err := sql.Open("mysql", "admin:admin@tcp(127.0.0.1:3306)/auth")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	defer func(db *sql.DB) {
+		err := db.Close()
+		if err != nil {
+
+		}
+	}(db)
+
 	m := make(map[string]string)
 
-	m["username"] = "austinbenerdy"
-	m["password"] = "debug-password"
+	m["email"] = "austin.l.adamson@gmail.com"
+	m["password"] = "test-password"
+
+	insert, err := db.Query("REPLACE INTO users VALUES(?, ?, ?)", 1, m["email"], m["password"])
+	defer func(insert *sql.Rows) {
+		err := insert.Close()
+		if err != nil {
+
+		}
+	}(insert)
 
 	bodyJson, _ := json.Marshal(m)
 
