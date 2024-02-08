@@ -27,7 +27,10 @@ func TestLoginHandler(t *testing.T) {
 	m["email"] = "austin.l.adamson@gmail.com"
 	m["password"] = "test-password"
 
-	insert, err := db.Query("REPLACE INTO users VALUES(?, ?, ?)", 1, m["email"], m["password"])
+	lm := newLoginModel(m["email"], m["password"])
+	hashedPassword := lm.HashPassword()
+
+	insert, err := db.Query("REPLACE INTO users VALUES(?, ?, ?)", 1, lm.Email, hashedPassword)
 	defer func(insert *sql.Rows) {
 		err := insert.Close()
 		if err != nil {

@@ -22,11 +22,6 @@ func (application *Application) init() {
 	application.router.HandleFunc("/login", application.login).Methods("POST")
 }
 
-type LoginModel struct {
-	Email    string
-	Password string
-}
-
 func (application *Application) login(w http.ResponseWriter, r *http.Request) {
 
 	var loginModel LoginModel
@@ -37,9 +32,16 @@ func (application *Application) login(w http.ResponseWriter, r *http.Request) {
 		respondWithJSON(w, http.StatusInternalServerError, err.Error())
 	}
 
-	err = application.databaseConnect.authenticate(loginModel.Email, loginModel.Password)
+	user, err := application.databaseConnect.getUser(loginModel.Email)
+
 	if err != nil {
-		respondWithJSON(w, http.StatusUnauthorized, err.Error())
+		respondWithJSON(w, http.StatusInternalServerError, err.Error())
+	}
+
+	isAuthed := user.auth(loginModel.Password)
+
+	if !isAuthed {
+		respondWithJSON(w, http.StatusBadRequest, "Auth Failed")
 	}
 
 	token, err := application.tokenManager.createToken(loginModel.Email)
