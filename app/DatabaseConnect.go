@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/google/uuid"
 )
 
 type DatabaseConnect struct {
@@ -45,4 +46,36 @@ func (databaseConnect *DatabaseConnect) getUser(email string) (User, error) {
 		Email:    "",
 		Password: "",
 	}, &AuthFailedError{}
+}
+
+func (database *DatabaseConnect) createUser(email string, password string) User {
+	id := uuid.New()
+
+	user := User{
+		Id:       id.String(),
+		Email:    email,
+		Password: password,
+	}
+
+	db, err := sql.Open("mysql", "admin:admin@tcp(127.0.0.1:3306)/auth")
+	if err != nil {
+		panic(err.Error())
+	}
+
+	defer func(db *sql.DB) {
+		err := db.Close()
+		if err != nil {
+
+		}
+	}(db)
+
+	insert, err := db.Query("REPLACE INTO users VALUES(?, ?, ?)", user.Id, user.Email, user.Password)
+	defer func(insert *sql.Rows) {
+		err := insert.Close()
+		if err != nil {
+
+		}
+	}(insert)
+
+	return user
 }
