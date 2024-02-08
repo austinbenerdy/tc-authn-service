@@ -41,11 +41,7 @@ func (databaseConnect *DatabaseConnect) getUser(email string) (User, error) {
 		return user, nil
 	}
 
-	return User{
-		Id:       "",
-		Email:    "",
-		Password: "",
-	}, &AuthFailedError{}
+	return User{}, &AuthFailedError{}
 }
 
 func (database *DatabaseConnect) createUser(email string, password string) User {
