@@ -1,4 +1,4 @@
-package main
+package models
 
 import "golang.org/x/crypto/bcrypt"
 
@@ -8,7 +8,7 @@ type User struct {
 	Password string
 }
 
-func (u *User) auth(password string) bool {
+func (u *User) Auth(password string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
 	return err == nil
 }

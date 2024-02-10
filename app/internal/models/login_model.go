@@ -7,7 +7,7 @@ type LoginModel struct {
 	Password string
 }
 
-func newLoginModel(email string, password string) LoginModel {
+func NewLoginModel(email string, password string) LoginModel {
 	return LoginModel{
 		email,
 		password,

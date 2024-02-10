@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"database/sql"
 	"encoding/json"
+	"github.com/tinycloudtv/authn-service/app/internal/models"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -22,7 +23,7 @@ func TestLoginHandler(t *testing.T) {
 		}
 	}(db)
 
-	lm := newLoginModel("austin.l.adamson@gmail.com", "test-password")
+	lm := models.NewLoginModel("austin.l.adamson@gmail.com", "test-password")
 	hashedPassword := lm.HashPassword()
 
 	insert, err := db.Query("REPLACE INTO users VALUES(?, ?, ?)", 1, lm.Email, hashedPassword)
@@ -67,7 +68,7 @@ func TestLoginHandler(t *testing.T) {
 }
 
 func TestNewHandler(t *testing.T) {
-	lm := newLoginModel("newUserTest@gmail.com", "test-password")
+	lm := models.NewLoginModel("newUserTest@gmail.com", "test-password")
 
 	bodyJson, _ := json.Marshal(lm)
 

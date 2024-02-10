@@ -3,6 +3,8 @@ package main
 import (
 	"encoding/json"
 	"github.com/gorilla/mux"
+	"github.com/tinycloudtv/authn-service/app/internal/models"
+	"github.com/tinycloudtv/authn-service/app/internal/repositories"
 	"net/http"
 )
 
@@ -10,10 +12,12 @@ type Application struct {
 	tokenManager    TokenManager
 	router          *mux.Router
 	databaseConnect DatabaseConnect
+	usersRepository repositories.UserRepository
 }
 
 func (application *Application) init() {
 	application.databaseConnect.testConnect()
+	application.usersRepository.Init()
 
 	application.tokenManager = TokenManager{}
 	application.tokenManager.secretKey = []byte("secret-key")
@@ -26,7 +30,7 @@ func (application *Application) init() {
 
 func (application *Application) login(w http.ResponseWriter, r *http.Request) {
 
-	var loginModel LoginModel
+	var loginModel models.LoginModel
 
 	err := json.NewDecoder(r.Body).Decode(&loginModel)
 
@@ -40,7 +44,7 @@ func (application *Application) login(w http.ResponseWriter, r *http.Request) {
 		respondWithJSON(w, http.StatusInternalServerError, err.Error())
 	}
 
-	isAuthed := user.auth(loginModel.Password)
+	isAuthed := user.Auth(loginModel.Password)
 
 	if !isAuthed {
 		respondWithJSON(w, http.StatusBadRequest, "Auth Failed")
@@ -56,7 +60,7 @@ func (application *Application) login(w http.ResponseWriter, r *http.Request) {
 }
 
 func (application *Application) new(w http.ResponseWriter, r *http.Request) {
-	var loginModel LoginModel
+	var loginModel models.LoginModel
 	err := json.NewDecoder(r.Body).Decode(&loginModel)
 
 	if err != nil {

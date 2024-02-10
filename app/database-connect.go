@@ -5,6 +5,8 @@ import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/google/uuid"
+	"github.com/tinycloudtv/authn-service/app/internal/errors"
+	"github.com/tinycloudtv/authn-service/app/internal/models"
 )
 
 type DatabaseConnect struct {
@@ -19,7 +21,7 @@ func (databaseConnect *DatabaseConnect) testConnect() {
 	fmt.Println("Success!")
 }
 
-func (databaseConnect *DatabaseConnect) getUser(email string) (User, error) {
+func (databaseConnect *DatabaseConnect) getUser(email string) (models.User, error) {
 	db, err := sql.Open("mysql", "admin:admin@tcp(127.0.0.1:3306)/auth")
 	if err != nil {
 		panic(err.Error())
@@ -35,19 +37,19 @@ func (databaseConnect *DatabaseConnect) getUser(email string) (User, error) {
 	results, err := db.Query("SELECT * FROM users WHERE email = ?", email)
 
 	for results.Next() {
-		var user User
+		var user models.User
 		err = results.Scan(&user.Id, &user.Email, &user.Password)
 
 		return user, nil
 	}
 
-	return User{}, &AuthFailedError{}
+	return models.User{}, &errors.AuthFailedError{}
 }
 
-func (database *DatabaseConnect) createUser(email string, password string) User {
+func (database *DatabaseConnect) createUser(email string, password string) models.User {
 	id := uuid.New()
 
-	user := User{
+	user := models.User{
 		Id:       id.String(),
 		Email:    email,
 		Password: password,
