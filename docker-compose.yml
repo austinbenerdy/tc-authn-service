@@ -17,6 +17,16 @@ services:
     networks:
       - control_plane
 
+  authn:
+    build:
+      context: ./docker
+      dockerfile: Dockerfile
+    ports:
+      - "3000:8000"
+    volumes:
+      - ./app:/usr/src/app
+
+
 volumes:
   database:
   authn:
