@@ -26,6 +26,7 @@ func (application *Application) init() {
 	application.router.HandleFunc("/login", application.login).Methods("POST")
 	application.router.HandleFunc("/new", application.new).Methods("POST")
 	application.router.HandleFunc("/validate", application.new).Methods("POST")
+	application.router.HandleFunc("/", application.home).Methods("GET")
 }
 
 func (application *Application) login(w http.ResponseWriter, r *http.Request) {
@@ -89,4 +90,17 @@ func (application *Application) validate(w http.ResponseWriter, r *http.Request)
 	}
 
 	respondWithJSON(w, http.StatusUnauthorized, "")
+}
+
+func (application *Application) home(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(200)
+	type homepage struct {
+		Page string
+	}
+
+	payload, _ := json.Marshal(&homepage{
+		Page: "Homepage",
+	})
+
+	w.Write(payload)
 }
