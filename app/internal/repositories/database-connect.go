@@ -3,6 +3,7 @@ package repositories
 import (
 	"database/sql"
 	"fmt"
+	"github.com/pressly/goose"
 )
 
 type DatabaseConnect struct {
@@ -29,4 +30,19 @@ func (databaseConnect *DatabaseConnect) Open() {
 
 func (databaseConnect *DatabaseConnect) Close() {
 	databaseConnect.DB.Close()
+}
+
+func (databaseConnect *DatabaseConnect) Migrate() {
+	databaseConnect.Open()
+	defer databaseConnect.Close()
+
+	err := goose.SetDialect("mysql")
+	if err != nil {
+		panic(err)
+	}
+
+	err = goose.Up(databaseConnect.DB, "migrations")
+	if err != nil {
+		panic(err)
+	}
 }

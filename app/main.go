@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"github.com/tinycloudtv/authn-service/app/internal/repositories"
 	"log"
 	"net/http"
 )
@@ -9,6 +10,9 @@ import (
 func main() {
 	app := Application{}
 	app.init()
+
+	db := repositories.DatabaseConnect{}
+	db.Migrate()
 
 	log.Println("Listening for requests")
 	log.Println("http://localhost:8000")

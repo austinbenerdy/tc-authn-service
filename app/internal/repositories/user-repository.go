@@ -15,7 +15,7 @@ func (repo UserRepository) Init() {
 	repo.db = DatabaseConnect{}
 }
 
-func (repo UserRepository) getUser(email string) (models.User, error) {
+func (repo UserRepository) GetUser(email string) (models.User, error) {
 	repo.db.Open()
 	defer repo.db.Close()
 
@@ -32,7 +32,7 @@ func (repo UserRepository) getUser(email string) (models.User, error) {
 	return models.User{}, &errors.AuthFailedError{}
 }
 
-func (repo UserRepository) createUser(email string, password string) models.User {
+func (repo UserRepository) CreateUser(email string, password string) models.User {
 	id := uuid.New()
 
 	user := models.User{

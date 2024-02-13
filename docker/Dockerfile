@@ -1,6 +1,7 @@
 FROM golang
 
-WORKDIR /usr/src/app
+WORKDIR /usr/src
 
+COPY .. .
 
-ENTRYPOINT ["./app"]
+ENTRYPOINT ["tail", "-f", "/dev/null"]

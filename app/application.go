@@ -11,12 +11,10 @@ import (
 type Application struct {
 	tokenManager    TokenManager
 	router          *mux.Router
-	databaseConnect DatabaseConnect
 	usersRepository repositories.UserRepository
 }
 
 func (application *Application) init() {
-	application.databaseConnect.testConnect()
 	application.usersRepository.Init()
 
 	application.tokenManager = TokenManager{}
@@ -39,7 +37,7 @@ func (application *Application) login(w http.ResponseWriter, r *http.Request) {
 		respondWithJSON(w, http.StatusInternalServerError, err.Error())
 	}
 
-	user, err := application.databaseConnect.getUser(loginModel.Email)
+	user, err := application.usersRepository.GetUser(loginModel.Email)
 
 	if err != nil {
 		respondWithJSON(w, http.StatusInternalServerError, err.Error())
@@ -68,7 +66,7 @@ func (application *Application) new(w http.ResponseWriter, r *http.Request) {
 		respondWithJSON(w, http.StatusInternalServerError, err.Error())
 	}
 
-	application.databaseConnect.createUser(loginModel.Email, loginModel.HashPassword())
+	application.usersRepository.CreateUser(loginModel.Email, loginModel.HashPassword())
 
 	respondWithJSON(w, http.StatusCreated, "User Created")
 }
