@@ -3,6 +3,7 @@ package repositories
 import (
 	"database/sql"
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/pressly/goose"
 )
 
@@ -10,7 +11,7 @@ type DatabaseConnect struct {
 	DB *sql.DB
 }
 
-func (databaseConnect *DatabaseConnect) testConnect() {
+func (databaseConnect *DatabaseConnect) TestConnect() {
 	db, err := sql.Open("mysql", "admin:admin@tcp(127.0.0.1:3306)/auth")
 	if err != nil {
 		panic(err.Error())
@@ -20,7 +21,7 @@ func (databaseConnect *DatabaseConnect) testConnect() {
 }
 
 func (databaseConnect *DatabaseConnect) Open() {
-	db, err := sql.Open("mysql", "admin:admin@tcp(127.0.0.1:3306)/auth")
+	db, err := sql.Open("mysql", "admin:admin@tcp(127.0.0.1:3306)/auth?parseTime=true")
 	if err != nil {
 		panic(err.Error())
 	}

@@ -12,6 +12,7 @@ func main() {
 	app.init()
 
 	db := repositories.DatabaseConnect{}
+	db.TestConnect()
 	db.Migrate()
 
 	log.Println("Listening for requests")

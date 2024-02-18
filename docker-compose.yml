@@ -27,17 +27,6 @@ services:
       - ./app:/usr/src/app
     depends_on:
       - db
-      - db_migration
-
-  db_migration:
-    build:
-      context: ./docker
-      dockerfile: Dockerfile
-    volumes:
-      - ./app:/usr/src/app
-    depends_on:
-      - db
-
 
 volumes:
   database:

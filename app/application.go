@@ -49,7 +49,7 @@ func (application *Application) login(w http.ResponseWriter, r *http.Request) {
 		respondWithJSON(w, http.StatusBadRequest, "Auth Failed")
 	}
 
-	token, err := application.tokenManager.createToken(loginModel.Email)
+	token, err := application.tokenManager.createToken(user)
 
 	if err != nil {
 		respondWithJSON(w, http.StatusInternalServerError, err.Error())
